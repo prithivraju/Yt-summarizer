@@ -1,5 +1,5 @@
 import streamlit as st
-from youtube_transcript_api import YouTubeTranscriptApi
+from youtube_transcript_api import YouTubeTranscriptApi, NoTranscriptFound, TranscriptsDisabled
 import openai
 
 st.set_page_config(page_title="YouTube Summarizer", layout="centered")
