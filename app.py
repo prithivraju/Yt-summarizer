@@ -9,14 +9,19 @@ st.title("🎥 YouTube Video Summarizer with ChatGPT")
 api_key = st.text_input("Enter your OpenAI API key", type="password")
 video_url = st.text_input("Paste YouTube video link")
 
+from youtube_transcript_api import YouTubeTranscriptApi, NoTranscriptFound, TranscriptsDisabled
+
 def get_transcript(video_url):
     try:
         video_id = video_url.split("v=")[-1].split("&")[0]
-        transcript = YouTubeTranscriptApi.get_transcript(video_id)
+        transcript = YouTubeTranscriptApi.get_transcript(video_id, languages=['en', 'en-US', 'en-GB'])
         text = " ".join([t['text'] for t in transcript])
         return text
+    except (NoTranscriptFound, TranscriptsDisabled):
+        st.error("🚫 Transcript not available for this video. Try another link.")
+        return None
     except Exception as e:
-        st.error(f"Transcript Error: {e}")
+        st.error(f"❌ Unexpected error while fetching transcript: {e}")
         return None
 
 def summarize_text(text, api_key):
