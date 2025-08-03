@@ -14,9 +14,22 @@ from youtube_transcript_api import YouTubeTranscriptApi, NoTranscriptFound, Tran
 def get_transcript(video_url):
     try:
         video_id = video_url.split("v=")[-1].split("&")[0]
-        transcript = YouTubeTranscriptApi.get_transcript(video_id, languages=['en', 'en-US', 'en-GB'])
-        text = " ".join([t['text'] for t in transcript])
+
+        # Get list of transcripts
+        transcript_list = YouTubeTranscriptApi.list_transcripts(video_id)
+
+        # Try to find English transcript
+        try:
+            transcript = transcript_list.find_transcript(['en'])
+        except:
+            st.error("⚠️ English transcript not found.")
+            return None
+
+        # Fetch the actual transcript
+        transcript_data = transcript.fetch()
+        text = " ".join([t['text'] for t in transcript_data])
         return text
+
     except (NoTranscriptFound, TranscriptsDisabled):
         st.error("🚫 Transcript not available for this video. Try another link.")
         return None
